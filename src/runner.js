@@ -4,22 +4,6 @@ import move from "./move.js";
 import validator from "./validator.js";
 import Position from "./position.js";
 
-const LOG_DIR = "logs";
-/**
- * Given a file name, deletes any existing file and creates a new blank one.
- *
- * @param  {string} logFile - The name of the file to delete and re-create.
- *
- * @return {undefined}
- */
-const resetLogFile = logFile => {
-  if (!fs.existsSync(LOG_DIR)) {
-    fs.mkdirSync(LOG_DIR);
-  }
-
-  fs.writeFileSync(logFile, "");
-};
-
 /**
  * Given a mine, runs the miner through the mine collecting gold along the way.
  *
@@ -55,7 +39,7 @@ const run = async (mine, logFile, yStart = 0) => {
         );
       }
       
-      position = await move(mine, position, mineTracking);
+      position = await move(mine, position);
       path.push(position);
       
       currentX = path.length - 1;
