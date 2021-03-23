@@ -16,7 +16,7 @@ let currDirection;
  *
  * @return {Position} The new position of the miner.
  */
-const move = (mine, position, minTracking) => {
+const move = (mine, position) => {
   // Greedy Algorithm
   let newX = (position && position.x + 1) || 0;
   let moveOps = Array(-1,0,1);
