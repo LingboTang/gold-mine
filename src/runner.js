@@ -1,8 +1,10 @@
 import fs from "fs";
 
+//import rm_dupe_move from "./rm_dupe_move.js";
 import move from "./move.js";
 import validator from "./validator.js";
 import Position from "./position.js";
+import dfs from "./dfs.js";
 
 /**
  * Given a mine, runs the miner through the mine collecting gold along the way.
@@ -21,7 +23,26 @@ const run = async (mine, logFile, yStart = 0) => {
   let position = new Position(0, 0);
   let maxIndex = 0;
   let paths = Array();
-  let mineTracking = Array.from(Array(mine.length), _ => Array(mine[0].length).fill(0));
+  let mineTracking = new Array();
+
+  for (let i = 0; i < mine.length; i++) {
+    let row = new Array();
+    for (let j = 0; j < mine[0].length; j++) {
+      row.push(new Set());
+    }
+    mineTracking.push(row);
+  }
+
+  let testPaths = Array();
+  for (let i = 0; i < mine.length; i++) {
+    let position = new Position(0, i);
+    let testPath = Array();
+    await dfs(mine, position, mineTracking, true, true, true, testPath, testPaths);
+  }
+  
+  console.log(mine);
+  console.log(mineTracking);
+  console.log(testPaths);
 
 
   for (var i = 0; i < mine.length; i++) {
