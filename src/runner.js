@@ -33,17 +33,13 @@ const run = async (mine, logFile, yStart = 0) => {
     mineTracking.push(row);
   }
 
-  let testPaths = Array();
   for (let i = 0; i < mine.length; i++) {
     let position = new Position(0, i);
-    let testPath = Array();
-    await dfs(mine, position, mineTracking, true, true, true, testPath, testPaths);
+    await dfs(mine, position, mineTracking, true, true, true);
   }
   
   console.log(mine);
   console.log(mineTracking);
-  console.log(testPaths);
-
 
   for (var i = 0; i < mine.length; i++) {
     let currentX = 0;
