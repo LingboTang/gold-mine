@@ -1,7 +1,6 @@
 import fs from "fs";
 
 import move from "./move.js";
-import validator from "./validator.js";
 import Position from "./position.js";
 
 /**
@@ -21,7 +20,6 @@ const run = async (mine, logFile, yStart = 0) => {
   let position = new Position(0, 0);
   let maxIndex = 0;
   let paths = Array();
-  let mineTracking = Array.from(Array(mine.length), _ => Array(mine[0].length).fill(0));
 
 
   for (var i = 0; i < mine.length; i++) {
@@ -30,6 +28,9 @@ const run = async (mine, logFile, yStart = 0) => {
     let score = 0;
     let path = Array();
     path.push(position);
+    let rightFlag = true;
+    let rightUpFlag = true;
+    let rightDownFlag = true;
 
     while (position.x < mine[0].length - 1 && position.isValid(mine)) {
 
@@ -38,15 +39,32 @@ const run = async (mine, logFile, yStart = 0) => {
           `Current position must be at x === ${currentX}, not ${position}`
         );
       }
+
+      let currentPos = position;
       
-      position = await move(mine, position);
-      path.push(position);
-      
-      currentX = path.length - 1;
+      position = await move(mine, position, rightFlag, rightUpFlag, rightDownFlag);
       
       if (!position.isValid(mine) || mine[position.y][position.x] === 0) {
         break;
       }
+
+      if ((position.y - currentPos.y) === 0) {
+        rightFlag = false;
+        rightUpFlag = true;
+        rightDownFlag = true;
+      }
+      if ((position.y - currentPos.y) === 1) {
+        rightFlag = true;
+        rightUpFlag = true;
+        rightDownFlag = false;
+      }
+      if ((position.y - currentPos.y) === -1) {
+        rightFlag = true;
+        rightUpFlag = false;
+        rightDownFlag = true;
+      }
+      path.push(position);
+      currentX = path.length - 1;
   
     }
 
