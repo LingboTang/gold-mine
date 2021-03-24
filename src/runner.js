@@ -31,6 +31,7 @@ const run = async (mine, logFile, yStart = 0) => {
     let rightFlag = true;
     let rightUpFlag = true;
     let rightDownFlag = true;
+    let movingOps = {rightFlag: rightFlag, rightUpFlag: rightUpFlag, rightDownFlag: rightDownFlag};
 
     while (position.x < mine[0].length - 1 && position.isValid(mine)) {
 

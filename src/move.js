@@ -39,24 +39,24 @@ const move = (mine, position, rightFlag, rightUpFlag, rightDownFlag) => {
     currMax = Math.max(rightDownVal, currMax);
   }
 
+  if (currMax === rightDownVal) {
+    return rightDownPos;
+  }
+  if (currMax === rightUpVal) {
+    return rightUpPos
+  }
   if (currMax === rightVal) {
     return rightPos;
   }
-  else if (currMax === rightDownVal) {
-    return rightDownPos
-  }
-  else if (currMax === rightUpVal) {
-    return rightUpPos;
-  }
   else {
-    if (rightFlag && newX < mine[0].length && rightPos.y < mine.length && rightPos.y >= 0) {
-      return rightPos;
+    if (rightDownFlag && newX < mine[0].length && rightDownPos.y < mine.length && rightDownPos.y >= 0) {
+      return rightDownPos;
     }
     if (rightUpFlag && newX < mine[0].length && rightUpPos.y < mine.length && rightUpPos.y >= 0) {
       return rightUpPos;
     }
-    if (rightDownFlag && newX < mine[0].length && rightDownPos.y < mine.length && rightDownPos.y >= 0) {
-      return rightDownPos;
+    if (rightFlag && newX < mine[0].length && rightPos.y < mine.length && rightPos.y >= 0) {
+      return rightPos;
     }
   }
 
