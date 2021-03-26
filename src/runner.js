@@ -19,19 +19,22 @@ const run = async (mine, logFile, yStart = 0) => {
   let finalScore = 0;
   let position = new Position(0, 0);
   let maxIndex = 0;
-  let paths = Array();
+  let paths = new Array();
 
 
   for (var i = 0; i < mine.length; i++) {
     let currentX = 0;
     position = new Position(0, i);
     let score = 0;
-    let path = Array();
+    let path = new Array();
+    let traceMoves = new Array();
     path.push(position);
     let rightFlag = true;
     let rightUpFlag = true;
     let rightDownFlag = true;
     let movingOps = {rightFlag: rightFlag, rightUpFlag: rightUpFlag, rightDownFlag: rightDownFlag};
+    traceMoves.push(movingOps);
+    let whileCount = 0;
 
     while (position.x < mine[0].length - 1 && position.isValid(mine)) {
 
@@ -43,31 +46,41 @@ const run = async (mine, logFile, yStart = 0) => {
 
       let currentPos = position;
       
-      position = await move(mine, position, rightFlag, rightUpFlag, rightDownFlag);
+      position = await move(mine, position, traceMoves, path);
+
+      if (typeof position === 'undefined') break;
+
+      if (whileCount > mine.length) {
+        break;
+      }
       
       if (!position.isValid(mine) || mine[position.y][position.x] === 0) {
         break;
       }
 
       if ((position.y - currentPos.y) === 0) {
-        rightFlag = false;
-        rightUpFlag = true;
-        rightDownFlag = true;
+        movingOps.rightFlag = false;
+        movingOps.rightUpFlag = true;
+        movingOps.rightDownFlag = true;
       }
       if ((position.y - currentPos.y) === 1) {
-        rightFlag = true;
-        rightUpFlag = true;
-        rightDownFlag = false;
+        movingOps.rightFlag = true;
+        movingOps.rightUpFlag = true;
+        movingOps.rightDownFlag = false;
       }
       if ((position.y - currentPos.y) === -1) {
-        rightFlag = true;
-        rightUpFlag = false;
-        rightDownFlag = true;
+        movingOps.rightFlag = true;
+        movingOps.rightUpFlag = false;
+        movingOps.rightDownFlag = true;
       }
+
+      let stepOps = {rightFlag: movingOps.rightFlag, rightUpFlag: movingOps.rightUpFlag, rightDownFlag: movingOps.rightDownFlag};
       path.push(position);
+      traceMoves.push(stepOps);
       currentX = path.length - 1;
-  
+      whileCount++;
     }
+    
 
     for (var j = 0; j < path.length; j++) {
       score += mine[path[j].y][path[j].x];
