@@ -40,14 +40,14 @@ const move = (mine, position, traceMoves, path) => {
     currMax = Math.max(rightDownVal, currMax);
   }
 
-  if (currMax === rightDownVal) {
-    return rightDownPos;
-  }
-  if (currMax === rightUpVal) {
-    return rightUpPos
-  }
   if (currMax === rightVal) {
     return rightPos;
+  }
+  if (currMax === rightDownVal) {
+    return rightDownPos
+  }
+  if (currMax === rightUpVal) {
+    return rightUpPos;
   }
   else {
     if (path.length === 1) {
