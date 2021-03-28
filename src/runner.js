@@ -36,6 +36,8 @@ const run = async (mine, logFile, yStart = 0) => {
     traceMoves.push(movingOps);
     let whileCount = 0;
 
+    //console.log("START");
+    //console.log(position);
     while (position.x < mine[0].length - 1 && position.isValid(mine)) {
 
       if (position.x !== currentX) {
@@ -50,12 +52,16 @@ const run = async (mine, logFile, yStart = 0) => {
 
       if (typeof position === 'undefined') break;
 
-      if (whileCount > mine.length) {
+      if (whileCount > mine[0].length + 1000) {
         break;
       }
       
       if (!position.isValid(mine) || mine[position.y][position.x] === 0) {
         break;
+      }
+
+      if (path.length > 0) {
+        currentPos = path[path.length-1];
       }
 
       if ((position.y - currentPos.y) === 0) {
@@ -85,6 +91,9 @@ const run = async (mine, logFile, yStart = 0) => {
     for (var j = 0; j < path.length; j++) {
       score += mine[path[j].y][path[j].x];
     }
+    //console.log(path[path.length-1]);
+    //console.log(score);
+    //console.log("END");
 
     if (score > finalScore) {
       maxIndex = i;

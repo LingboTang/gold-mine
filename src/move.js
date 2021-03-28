@@ -61,69 +61,73 @@ const move = (mine, position, traceMoves, path) => {
         return rightPos;
       }
     }
-    else {
-
-      let currPos = path.pop();
-      let currOps = traceMoves.pop();
-      
-
-      let traceBackPos = path[path.length - 1];
-      let traceBackOps = traceMoves[traceMoves.length - 1];
-      if ((currPos.y - traceBackPos.y) === 0) {
-        traceBackOps.rightFlag = false;
-      }
-      if ((currPos.y - traceBackPos.y) === 1) {
-        traceBackOps.rightDownFlag = false;
-      }
-      if ((currPos.y - traceBackPos.y) === -1) {
-        traceBackOps.rightUpFlag = false;
-      }
-
-
-      let alternateRightVal;
-      let alternateRightUpVal;
-      let alternateRightDownVal;
-      let alternateRightPos = new Position(currPos.x, traceBackPos.y);
-      let alternateRightUpPos = new Position(currPos.x, traceBackPos.y - 1);
-      let alternateRightDownPos = new Position(currPos.x, traceBackPos.y + 1);
-
-      if (alternateRightPos.isValid(mine) && traceBackOps.rightFlag) {
-        alternateRightVal = mine[alternateRightPos.y][alternateRightPos.x];
-      }
-      if (alternateRightUpPos.isValid(mine) && traceBackOps.rightUpFlag) {
-        alternateRightUpVal = mine[alternateRightUpPos.y][alternateRightUpPos.x];
-      }
-      if (alternateRightDownPos.isValid(mine) && traceBackOps.rightDownFlag) {
-        alternateRightDownVal = mine[alternateRightDownPos.y][alternateRightDownPos.x];
-      }
-      
-      /*console.log(alternateRightVal);
-      console.log(alternateRightUpVal);
-      console.log(alternateRightDownVal);
-      console.log(alternateRightPos);
-      console.log(alternateRightUpPos);
-      console.log(alternateRightDownPos);*/
-
-
-      if (alternateRightDownVal) {
-        return alternateRightDownPos;
-      }
-      if (alternateRightUpVal) {
-        return alternateRightUpPos;
-      }
-      if (alternateRightVal) {
-        return alternateRightPos;
-      }
-
-
-
+    else if (path.length >= 2) {
+      let alternativePos = undoSteps(mine, path, traceMoves);
+      return alternativePos;
     }
-
 
   }
 
 
 
 };
+
+const undoSteps = (mine, path, traceMoves) => {
+  let currPos;
+  let currOps;
+  let traceBackPos;
+  let traceBackOps;
+  let undoCount = 0;
+
+  while (path.length > 1) {
+    if (undoCount === 1) {
+      break;
+    }
+    currPos = path.pop();
+    currOps = traceMoves.pop();
+    traceBackPos = path[path.length - 1];
+    traceBackOps = traceMoves[traceMoves.length - 1];
+    undoCount++;
+  }  
+  
+  if ((currPos.y - traceBackPos.y) === 0) {
+    traceBackOps.rightFlag = false;
+  }
+  if ((currPos.y - traceBackPos.y) === 1) {
+    traceBackOps.rightDownFlag = false;
+  }
+  if ((currPos.y - traceBackPos.y) === -1) {
+    traceBackOps.rightUpFlag = false;
+  }
+
+  let alternateRightVal;
+  let alternateRightUpVal;
+  let alternateRightDownVal;
+  let alternateRightPos = new Position(currPos.x, traceBackPos.y);
+  let alternateRightUpPos = new Position(currPos.x, traceBackPos.y - 1);
+  let alternateRightDownPos = new Position(currPos.x, traceBackPos.y + 1);
+
+  if (alternateRightPos.isValid(mine) && traceBackOps.rightFlag) {
+    alternateRightVal = mine[alternateRightPos.y][alternateRightPos.x];
+  }
+  if (alternateRightUpPos.isValid(mine) && traceBackOps.rightUpFlag) {
+    alternateRightUpVal = mine[alternateRightUpPos.y][alternateRightUpPos.x];
+  }
+  if (alternateRightDownPos.isValid(mine) && traceBackOps.rightDownFlag) {
+    alternateRightDownVal = mine[alternateRightDownPos.y][alternateRightDownPos.x];
+  }
+
+
+  if (alternateRightDownVal) {
+    return alternateRightDownPos;
+  }
+  if (alternateRightUpVal) {
+    return alternateRightUpPos;
+  }
+  if (alternateRightVal) {
+    return alternateRightPos;
+  }
+}
+
 
 export default move;
