@@ -46,7 +46,7 @@ const run = async (mine, logFile, yStart = 0) => {
       }
 
       // If number of the steps is more than the size of mine, then there is a dead end.
-      if (whileLoopCounter > mine[0].length) {
+      if (whileLoopCounter > mine[0].length + 1000) {
         break;
       }
       
