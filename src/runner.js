@@ -1,6 +1,7 @@
 import fs from "fs";
 
 import move from "./move.js";
+import Position from "./position.js";
 
 /**
  * Given a mine, runs the miner through the mine collecting gold along the way.
@@ -15,36 +16,90 @@ const run = async (mine, logFile, yStart = 0) => {
   if (!mine) throw new Error("a mine is required");
   if (!logFile) throw new Error("a logFile is required");
 
-  // Initial position
-  let position = await move(mine);
+  // Initialize position and final results
+  let finalScore = 0;
+  let position = new Position(0, 0);
+  let maxIndex = 0;
+  let paths = Array();
 
-  // Track where the current X value should be
-  let currentX = 0;
+  // Start from the first column and run the greedy algorithm
+  // on each starting point
+  for (var i = 0; i < mine.length; i++) {
 
-  // A running tally of the score
-  let score = mine[position.y][position.x];
+    // Initialize the starting position and local path
+    let currentX = 0;
+    position = new Position(0, i);
+    let score = 0;
+    let path = Array();
+    path.push(position);
+    let invalidFlag = false;
+    let whileLoopCounter = 0;
+    
 
-  // log the initial position
-  log(logFile, position);
+    // From each starting point on the first column, run the greedy step
+    while (position.x < mine[0].length - 1 && position.isValid(mine)) {
 
-  while (position.x < mine[0].length - 1 && position.isValid(mine)) {
-    if (position.x !== currentX) {
-      throw new Error(
-        `Current position must be at x === ${currentX}, not ${position}`
-      );
+      if (position.x !== currentX) {
+        throw new Error(
+          `Current position must be at x === ${currentX}, not ${position}`
+        );
+      }
+
+      // If number of the steps is more than the size of mine, then there is a dead end.
+      if (whileLoopCounter > mine[0].length + 1000) {
+        break;
+      }
+      
+      // Greedy Step heuristic and verify if the step is valid.
+      var moveObject = await move(mine, position, path, invalidFlag);
+      position = moveObject.position;
+      invalidFlag = moveObject.invalidFlag;
+      path.push(position);
+      
+      currentX = path.length - 1;
+      
+      // If heuristic met a dead end, undo the step to choose another direction until
+      // we found a nother valid position.
+      if (!position.isValid(mine) || mine[position.y][position.x] === 0) {
+
+        var moveObject = await move(mine, position, path, invalidFlag);
+        position = moveObject.position;
+        invalidFlag = moveObject.invalidFlag;
+
+        // If still not valid, we just stop.
+        if (invalidFlag) {
+          break;
+        }
+        else {
+          path.push(position);
+          currentX = path.length - 1;
+        }
+        
+      }
+      whileLoopCounter++;
+  
     }
 
-    position = await move(mine, position);
-    currentX++;
+    // Calculate the score after we get one full path from one starting point
+    for (var j = 0; j < path.length; j++) {
+      score += mine[path[j].y][path[j].x];
+    }
 
-    log(logFile, position);
-
-    if (!position.isValid(mine) || mine[position.y][position.x] === 0) break;
-
-    score += mine[position.y][position.x];
+    // Update the max score and max path
+    if (score > finalScore) {
+      maxIndex = i;
+    }
+    finalScore = Math.max(score, finalScore);
+    paths.push(path);
   }
 
-  return score;
+
+  // Log the max path for validation
+  for (var i = 0; i < paths[maxIndex].length; i++) {
+    log(logFile, paths[maxIndex][i]);
+  }
+
+  return finalScore;
 };
 
 /**
